@@ -3,13 +3,9 @@ import {
   Component,
   instantiate,
   ProgressBar,
-  tween,
-  Tween,
-  Vec3,
   Vec2,
+  Vec3,
   view,
-  EventTouch,
-  Node,
 } from "cc";
 import { EntityManager } from "../../Base/EntityManager";
 import { WeaponManager } from "../Weapon/WeaponManager";
@@ -22,7 +18,7 @@ import {
   AudioPathEnum,
 } from "../../Common/Enum";
 import { IActor } from "../../Common/State";
-import { radToAngle, toFixed } from "../../Common/Utils";
+import { radToAngle } from "../../Common/Utils";
 import { ActorStateMachine } from "./ActorStateMachine";
 import DataManager from "../../Global/DataManager";
 import EventManager from "../../Global/EventManager";
@@ -163,16 +159,8 @@ export class ActorManager extends EntityManager {
     this.wm = weapon.addComponent(WeaponManager);
     this.wm.init(data);
 
-    this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
     EventManager.Instance.on(EventEnum.WeaponRotate, this.handleWeaponRotate, this);
   }
-
-  onTouchMove(event: EventTouch) {
-  const delta = event.getDelta();
-  // 转换为移动逻辑，例如更新位置
-  const deltaVec3 = new Vec3(delta.x * 0.1, delta.y * 0.1, 0);
-  this.node.setPosition(this.node.position.add(deltaVec3));  // 调整灵敏度
-}
 
   onDestroy() {
     EventManager.Instance.off(EventEnum.WeaponRotate, this.handleWeaponRotate, this);
