@@ -2,33 +2,19 @@ import { _decorator, Component, EventTouch, Input, input, Vec2, view } from 'cc'
 import EventManager from '../Global/EventManager';
 import { EventEnum, ControlModeEnum } from '../Common/Enum';
 import DataManager from '../Global/DataManager';
-import { JoyStickManager } from './JoyStickManager';
 import { InputManager } from './InputManager';
 import SettingsManager from '../Global/SettingsManager';
 const { ccclass } = _decorator;
 
 @ccclass('ScreenTouchManager')
 export class ScreenTouchManager extends Component {
-  private activeTouchId: number | null = null;
-
-  private isJoyStickActive(): boolean {
-    if (DataManager.Instance.jm) {
-      const jm = DataManager.Instance.jm as JoyStickManager;
-      return (jm as any).activeTouchId !== null;
-    }
-    return false;
-  }
 
   onLoad() {
     input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
-    input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-    input.on(Input.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
   }
 
   onDestroy() {
     input.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
-    input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-    input.off(Input.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
   }
 
   onTouchStart(e: EventTouch) {
@@ -38,9 +24,7 @@ export class ScreenTouchManager extends Component {
 
     const controlMode = SettingsManager.Instance.controlMode;
     
-    if (controlMode === ControlModeEnum.Joystick && this.activeTouchId === null) {
-      this.activeTouchId = e.getID();
-      
+    if (controlMode === ControlModeEnum.Joystick) {
       const actor = DataManager.Instance.state.actors.find(a => a.id === DataManager.Instance.myPlayerId);
       const actorManager = DataManager.Instance.actorMap.get(DataManager.Instance.myPlayerId);
       
@@ -60,12 +44,6 @@ export class ScreenTouchManager extends Component {
           EventManager.Instance.emit(EventEnum.WeaponRotate, dir.x, dir.y);
         }
       }
-    }
-  }
-
-  onTouchEnd(e: EventTouch) {
-    if (this.activeTouchId === e.getID()) {
-      this.activeTouchId = null;
     }
   }
 }
