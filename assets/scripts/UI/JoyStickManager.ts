@@ -5,7 +5,7 @@ const { ccclass, property } = _decorator;
 @ccclass('JoyStickManager')
 export class JoyStickManager extends Component {
 
-    input: Vec2 = Vec2.ZERO //公共字段，方便外界访问
+    input: Vec2 = Vec2.ZERO 
     
     private move: Node
     private stick: Node
