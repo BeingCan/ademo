@@ -1,7 +1,6 @@
 import { _decorator, Animation, Component } from "cc";
 const { ccclass } = _decorator;
 import State from "./State";
-import SubStateMachine from "./SubStateMachine";
 import { EntityTypeEnum, FsmParamTypeEnum } from "../Common/Enum";
 
 type ParamsValueType = boolean | number;
@@ -40,9 +39,9 @@ export const getInitParamsNumber = () => {
  */
 @ccclass("StateMachine")
 export default abstract class StateMachine extends Component {
-  private _currentState: State | SubStateMachine = null;
+  private _currentState: State  = null;
   params: Map<string, IParamsValue> = new Map();
-  stateMachines: Map<string, SubStateMachine | State> = new Map();
+  stateMachines: Map<string, State> = new Map();
   animationComponent: Animation;
   type: EntityTypeEnum;
 

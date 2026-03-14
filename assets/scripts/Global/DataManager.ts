@@ -6,20 +6,13 @@ import { BulletManager } from "../Entity/Bullet/BulletManager";
 import EventManager from "./EventManager";
 import {IBullet, IClientInput, IState } from "../Common/State";
 import { EntityTypeEnum, EventEnum, InputTypeEnum } from "../Common/Enum";
-import { randomBySeed, toFixed } from "../Common/Utils";
+import { toFixed } from "../Common/Utils";
 import { DEFAULT_GAME_STATE } from "../Common/DefaultState";
-import GameLaunchManager, { GameLaunchMode } from "./GameLaunchManager";
+import GameLaunchManager from "./GameLaunchManager";
+import { EnemyManager } from "../Entity/Enemy/EnemyManager";
+import { GAME_CONSTANTS } from "../Common/GameConstants";
 
-const ACTOR_SPEED = 100;
-const BULLET_SPEED = 600;
-
-const MAP_WIDTH = 1280;
-const MAP_HEIGHT = 720;
-
-const PLAYER_RADIUS = 50;
-const BULLET_RADIUS = 10;
-
-const BULLET_DAMAGE = 5;
+const { ACTOR_SPEED, BULLET_SPEED, MAP_WIDTH, MAP_HEIGHT } = GAME_CONSTANTS;
 
 export default class DataManager extends Singleton {
   static get Instance() {
@@ -33,22 +26,34 @@ export default class DataManager extends Singleton {
   jm: JoyStickManager;
 
   actorMap: Map<number, ActorManager> = new Map();
+  bulletMap: Map<number, BulletManager> = new Map();
+  enemyMap: Map<number, EnemyManager> = new Map();
   prefabMap: Map<string, Prefab> = new Map();
   textureMap: Map<string, SpriteFrame[]> = new Map();
-  bulletMap: Map<number, BulletManager> = new Map();
- 
-  lastState: IState;
 
   state: IState = this.getInitialState();
 
   getInitialState(): IState {
-    const launchMode = GameLaunchManager.Instance.getLaunchMode();
-    if (launchMode === GameLaunchMode.ContinueGame) {
-      const savedState = GameLaunchManager.Instance.getSavedState();
-      if (savedState) {
-        GameLaunchManager.Instance.clear();
-        return savedState;
+    const savedState = GameLaunchManager.Instance.getSavedState();
+    if (savedState) {
+      GameLaunchManager.Instance.clear();
+      
+      const defaultState = JSON.parse(JSON.stringify(DEFAULT_GAME_STATE));
+      
+      if (!savedState.inventory) {
+        savedState.inventory = defaultState.inventory;
       }
+      
+      for (const actor of savedState.actors) {
+        if (!actor.ammo) {
+          actor.ammo = defaultState.actors[0]?.ammo || {
+            [EntityTypeEnum.Weapon1]: 0,
+            [EntityTypeEnum.Weapon2]: 0
+          };
+        }
+      }
+      
+      return savedState;
     }
     return JSON.parse(JSON.stringify(DEFAULT_GAME_STATE));
   }
@@ -84,12 +89,14 @@ export default class DataManager extends Singleton {
       }
       case InputTypeEnum.WeaponShoot: {
         const { owner, position, direction } = input;
+        const actor = this.state.actors.find((e) => e.id === owner);
         const bullet: IBullet = {
           id: this.state.nextBulletId++,
           owner: owner,
           position: position,
           direction: direction,
           type: this.actorMap.get(owner).bulletType,
+          weaponType: actor ? actor.weaponType : EntityTypeEnum.Weapon1,
         };
 
         EventManager.Instance.emit(EventEnum.BulletBorn, owner); //只有当子弹和武器的owner相同时才触发武器的attack状态
@@ -99,52 +106,50 @@ export default class DataManager extends Singleton {
       }
       case InputTypeEnum.TimePast: {
         const { dt } = input;
-        const { bullets, actors } = this.state;
-
-        for (let i = bullets.length - 1; i >= 0; i--) {
-          const bullet = bullets[i];
-
-          for (let j = actors.length - 1 ; j >= 0 ; j--) {
-            const actor = actors[j];
-            if (
-              bullet.owner !== actor.id && 
-              (actor.position.x - bullet.position.x) ** 2 +
-                (actor.position.y - bullet.position.y) ** 2 <
-              (PLAYER_RADIUS + BULLET_RADIUS) ** 2
-            ) {
-              const random = randomBySeed(this.state.seed)
-              this.state.seed = random
-              const damage = random / 233280 >= 0.5 ? BULLET_DAMAGE * 2 : BULLET_DAMAGE
-              actor.hp -= damage
-              EventManager.Instance.emit(EventEnum.ExplosionBorn, bullet.id, {
-                x: toFixed((bullet.position.x + actor.position.x) / 2),
-                y: toFixed((bullet.position.y + actor.position.y) / 2),
-              });
-              bullets.splice(i, 1);
-              break
-            }
-          }
-
-          if (
-            Math.abs(bullet.position.x) > MAP_WIDTH / 2 ||
-            Math.abs(bullet.position.y) > MAP_HEIGHT / 2
-          ) {
-            EventManager.Instance.emit(EventEnum.ExplosionBorn, bullet.id, {
-              x: bullet.position.x,
-              y: bullet.position.y,
-            });
-            bullets.splice(i, 1);
-            break
-          }
-        }
-
-        for (const bullet of bullets) {
-          bullet.position.x += toFixed(bullet.direction.x * dt * BULLET_SPEED);
-          bullet.position.y += toFixed(bullet.direction.y * dt * BULLET_SPEED);
-        }
-
+        
+        this.updateBullets(dt);
         break;
       }
     }
+  }
+
+  /**
+   * 更新所有子弹的位置
+   * @param dt - 时间增量（秒）
+   */
+  private updateBullets(dt: number) {
+    const { bullets } = this.state;
+    
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const bullet = bullets[i];
+      
+      bullet.position.x += toFixed(bullet.direction.x * dt * BULLET_SPEED);
+      bullet.position.y += toFixed(bullet.direction.y * dt * BULLET_SPEED);
+      
+      if (this.checkBulletOutOfBounds(bullet)) {
+        this.removeBullet(i, bullet.position);
+      }
+    }
+  }
+
+  /**
+   * 检查子弹是否超出地图边界
+   * @param bullet - 子弹数据
+   * @returns 是否超出边界
+   */
+  private checkBulletOutOfBounds(bullet: IBullet): boolean {
+    return Math.abs(bullet.position.x) > MAP_WIDTH / 2 ||
+           Math.abs(bullet.position.y) > MAP_HEIGHT / 2;
+  }
+
+  /**
+   * 移除子弹并触发爆炸效果
+   * @param index - 子弹在数组中的索引
+   * @param position - 子弹位置
+   */
+  private removeBullet(index: number, position: { x: number; y: number }) {
+    const bullet = this.state.bullets[index];
+    EventManager.Instance.emit(EventEnum.ExplosionBorn, bullet.id, position);
+    this.state.bullets.splice(index, 1);
   }
 }

@@ -19,6 +19,11 @@ export default class GameLaunchManager extends Singleton {
     this.savedState = null;
   }
 
+  setNewGameWithState(state: IState): void {
+    this.launchMode = GameLaunchMode.NewGame;
+    this.savedState = state;
+  }
+
   setContinueGame(state: IState): void {
     this.launchMode = GameLaunchMode.ContinueGame;
     this.savedState = state;

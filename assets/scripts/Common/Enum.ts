@@ -1,3 +1,4 @@
+
 export enum FsmParamTypeEnum {
   Number = "Number",
   Trigger = "Trigger",
@@ -21,12 +22,24 @@ export enum EntityTypeEnum {
   Setting = "Setting",
   SettingButton = "SettingButton",
   ReturnConfirm = "ReturnConfirm",
+  CharacterSelect = "CharacterSelect",
+  Enemy1 = "Enemy1",
+  Enemy2 = "Enemy2",
+  Enemy3 = "Enemy3",
+  Inventory = "Inventory",
 }
 
 export enum EntityStateEnum {
   Idle = "Idle",
   Run = "Run",
   Attack = "Attack",
+}
+
+export enum InventoryItemType {
+  Ammo = 1,
+  HealthPack = 2,
+  Elixir = 3,
+  Empty = 4,
 }
 
 export enum EventEnum {
@@ -42,6 +55,16 @@ export enum EventEnum {
   OpenReturnConfirm = "OpenReturnConfirm",
   CloseReturnConfirm = "CloseReturnConfirm",
   WeaponRotate = "WeaponRotate",
+  SwitchWeapon = "SwitchWeapon",
+  OpenCharacterSelect = "OpenCharacterSelect",
+  CloseCharacterSelect = "CloseCharacterSelect",
+  StartGameWithSelection = "StartGameWithSelection",
+  PickupInventoryItem = "PickupInventoryItem",
+  UseInventoryItem = "UseInventoryItem",
+  UpdateWeaponDisplay = "UpdateWeaponDisplay",
+  UpdateInventoryDisplay = "UpdateInventoryDisplay",
+  EnemyBorn = "EnemyBorn",
+  EnemyDie = "EnemyDie",
 }
 
 export enum ControlModeEnum {
@@ -61,6 +84,11 @@ export enum PrefabPathEnum {
   Setting = "prefab/Setting",
   SettingButton = "prefab/SettingButton",
   ReturnConfirm = "prefab/ReturnConfirm",
+  CharacterSelect = "prefab/CharacterSelect",
+  Enemy1 = "prefab/Enemy1",
+  Enemy2 = "prefab/Enemy2",
+  Enemy3 = "prefab/Enemy3",
+  Inventory = "prefab/Inventory",
 }
 
 export enum TexturePathEnum {
@@ -75,6 +103,9 @@ export enum TexturePathEnum {
   Bullet1Idle = "texture/bullet/bullet1",
   Bullet2Idle = "texture/bullet/bullet2",
   ExplosionIdle = "texture/explosion",
+  Explosion1 = "texture/explosion/explosion (1)",
+  Explosion2 = "texture/explosion/explosion (2)",
+  Explosion3 = "texture/explosion/explosion (3)",
 }
 
 export enum AudioPathEnum {
@@ -98,4 +129,5 @@ export enum InputTypeEnum {
 export enum SceneEnum {
   battle = "battle",
   start = "start",
+  loading = "loading",
 }

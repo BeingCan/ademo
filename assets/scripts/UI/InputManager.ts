@@ -1,5 +1,7 @@
-import { Input, input, Vec2, EventMouse } from "cc";
+import { Input, input, Vec2, EventMouse, EventKeyboard, KeyCode } from "cc";
 import Singleton from "../Base/Singleton";
+import EventManager from "../Global/EventManager";
+import { EventEnum, InventoryItemType } from "../Common/Enum";
 
 export class InputManager extends Singleton {
   static get Instance() {
@@ -18,6 +20,7 @@ export class InputManager extends Singleton {
     }
 
     input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
+    input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     this.isInitialized = true;
   }
 
@@ -29,6 +32,7 @@ export class InputManager extends Singleton {
 
   onDestroy() {
     input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
+    input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     this.isInitialized = false;
   }
 
@@ -41,6 +45,23 @@ export class InputManager extends Singleton {
       this.rightClickPos = new Vec2(event.getUILocation().x, event.getUILocation().y);
     } else if (event.getButton() === EventMouse.BUTTON_LEFT) {
       this.leftClickPos = new Vec2(event.getUILocation().x, event.getUILocation().y);
+    }
+  }
+
+  onKeyDown(event: EventKeyboard) {
+    if (this.isPaused) {
+      return;
+    }
+
+    if (event.keyCode === KeyCode.TAB) {
+      EventManager.Instance.emit(EventEnum.SwitchWeapon);
+    } else if (event.keyCode === KeyCode.DIGIT_1 || event.keyCode === KeyCode.NUM_1) {
+      EventManager.Instance.emit(EventEnum.UseInventoryItem, InventoryItemType.Ammo);
+    } else if (event.keyCode === KeyCode.DIGIT_2 || event.keyCode === KeyCode.NUM_2) {
+      EventManager.Instance.emit(EventEnum.UseInventoryItem, InventoryItemType.HealthPack);
+    } else if (event.keyCode === KeyCode.DIGIT_3 || event.keyCode === KeyCode.NUM_3) {
+      EventManager.Instance.emit(EventEnum.UseInventoryItem, InventoryItemType.Elixir);
+    } else if (event.keyCode === KeyCode.DIGIT_4 || event.keyCode === KeyCode.NUM_4) {
     }
   }
 
