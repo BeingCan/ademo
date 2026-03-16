@@ -181,7 +181,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 423.3576642335766,
+    "_orthoHeight": 423.55515041020965,
     "_near": 0,
     "_far": 2000,
     "_color": {
@@ -2044,7 +2044,7 @@
     "_string": "返回",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 25.6875,
+    "_actualFontSize": 25.7109375,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -2312,7 +2312,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 24.799999999999997,
+      "y": 24.800000000000004,
       "z": 0
     },
     "_lrot": {
@@ -2350,8 +2350,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 59.98246464416058,
-      "height": 50.4
+      "width": 59.99779227438468,
+      "height": 50.39999999999999
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2383,7 +2383,7 @@
     "_string": "伟哥哥",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 25.6875,
+    "_actualFontSize": 25.7109375,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -2421,7 +2421,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -35.60000000000001,
+      "y": -35.59999999999999,
       "z": 0
     },
     "_lrot": {
@@ -2459,8 +2459,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 30.39148038321168,
-      "height": 50.4
+      "width": 30.399265990580368,
+      "height": 50.39999999999999
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2492,7 +2492,7 @@
     "_string": "111",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 25.6875,
+    "_actualFontSize": 25.7109375,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
