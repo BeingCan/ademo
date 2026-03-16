@@ -68,7 +68,7 @@ export class EnemyManager extends EntityManager {
     const config = ENEMY_CONFIGS[data.type as EntityTypeEnum.Enemy1 | EntityTypeEnum.Enemy2 | EntityTypeEnum.Enemy3];
     
     if (Math.random() < config.dropProbability) {
-      this.dropItem(data.position, config);
+      this.dropItem(config);
     }
 
     const index = DataManager.Instance.state.enemies.findIndex(e => e.id === this.id);
@@ -83,7 +83,7 @@ export class EnemyManager extends EntityManager {
     }
   }
 
-  private dropItem(position: { x: number; y: number }, config: IEnemyConfig) {
+  private dropItem( config: IEnemyConfig) {
     interface IDropTableEntry {
       itemType: InventoryItemType;
       weight: number;
